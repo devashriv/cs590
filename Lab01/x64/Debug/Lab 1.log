@@ -1,0 +1,5 @@
+﻿  main.cpp
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab01\Lab01\src\main.cpp(166,27): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab01\Lab01\src\main.cpp(166,53): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab01\Lab01\src\main.cpp(208,18): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+  Lab 1.vcxproj -> C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab01\Lab01\x64\Debug\Lab 1.exe
