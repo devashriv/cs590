@@ -1,0 +1,65 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(452,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (sample.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  plyGen.cpp
+  objGen.cpp
+  vect3d.cpp
+  triangle.cpp
+  helper.cpp
+  main.cpp
+cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\include\trackball.h(109,14): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(40,37): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(69,31): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(70,33): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(71,31): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(74,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(75,36): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(76,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(79,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(80,36): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(81,36): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(82,32): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(84,36): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(85,36): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(86,36): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(87,32): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(89,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(90,36): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(91,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(92,32): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(94,33): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(95,35): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(96,33): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(97,31): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(99,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(100,33): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(101,31): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(104,37): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(105,36): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(106,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(107,35): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(109,33): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(110,35): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(111,33): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(112,31): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(114,37): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(115,37): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(116,37): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(117,37): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(156,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(163,8): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(275,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(339,31): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\include\utility(165,16): warning C4244: 'initializing': conversion from '_Ty' to '_Ty1', possible loss of data
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\include\utility(165,16): warning C4244:         with
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\include\utility(165,16): warning C4244:         [
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\include\utility(165,16): warning C4244:             _Ty=double
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\include\utility(165,16): warning C4244:         ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\include\utility(165,16): warning C4244:         and
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\include\utility(165,16): warning C4244:         [
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\include\utility(165,16): warning C4244:             _Ty1=int
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.23.28105\include\utility(165,16): warning C4244:         ]
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(175): message : see reference to function template instantiation 'std::pair<int,int>::pair<double,int,0>(std::pair<double,int> &&) noexcept' being compiled
+  Generating Code...
+C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\main.cpp(175): message : see reference to function template instantiation 'std::pair<int,int>::pair<double,int,0>(std::pair<double,int> &&) noexcept' being compiled
+main.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+  sample.vcxproj -> C:\Users\devas\OneDrive - purdue.edu\Spring 20\CS 590\Lab03\Debug\Lab3.exe
