@@ -45,33 +45,24 @@
 			var exporter;
 			var group,control,orbit;
 			var objects = [];
+			var cardboards = [];
 
 			var mouse = new THREE.Vector2(), raycaster = new THREE.Raycaster();
 			
 			//components
 			//joint objects
 			var m_socket, f_socket, thinge, bhinge; 
-			// joint bounding boxes 
-			var bb_m_socket, bb_f_socket, bb_thinge, bb_bhinge;
-			var mBoxHelper, fBoxHelper, thBoxHelper, bhBoxHelper;
-			
 			//links objects
 			var link1, link2;
-			//link boinding box
-			var bb_link1, bb_link2;
-			var l1BoxHelper, l2BoxHelper;
-			
 			//electronics objects
 			var servo, horn;
-			//electronics bounding boxes
-			var bb_servo, bb_horn;
-			var hBoxHelper, sBoxHelper
+			//cardboard objects
+			var quad, tri, circle;
 
 			//flags
 			var enableSelection = false;
-			var click_counter=0;        //to switch between modes for transform handle
-			var first =0;
-			
+			var click_counter=0;        //to switch between modes for transform handles
+
 			var msload_flag = false,
 			fsload_flag = false,
 			sload_flag = false,
@@ -79,10 +70,10 @@
 			thload_flag = false,
 			bhload_flag = false,
 			l1load_flag = false,
-			l2load_flag = false;
-
-			group = new THREE.Group();
-			//scene.add( group );
+			l2load_flag = false,
+			qload_flag= false,
+			triload_flag=false,
+			circleload_flag=false;
 
 			//main function
 			init();
@@ -127,15 +118,13 @@
 				renderer.shadowMap.enabled = true;
 				renderer.shadowMap.type = THREE.PCFShadowMap;
 				container.appendChild( renderer.domElement );
-				
-				
 
-				//orbit controls
+				//orbit controls- to pan, zoom, rotate global coordinate system
 				orbit = new OrbitControls( camera, renderer.domElement );
 				orbit.update();
 				orbit.addEventListener( 'change', render );
 
-				//trsnsform controls
+				//trsnsform controls- to transform component level coordinate system
 				control = new TransformControls( camera, renderer.domElement );
 				control.addEventListener( 'change', render );
 				control.addEventListener( 'dragging-changed', function ( event ) {
@@ -147,41 +136,9 @@
 
 				//load GUI
 				displaygui();
-				
-				/*
-				var buttonExportASCII = document.getElementById( 'exportASCII' );
-				buttonExportASCII.addEventListener( 'click', exportASCII );
-
-				var buttonExportBinary = document.getElementById( 'exportBinary' );
-				buttonExportBinary.addEventListener( 'click', exportBinary );
-				*/
-				
 			}
-			/*
-			function exportASCII() {
-				for ( var i = 0; i <objects.length; i++)
-				{
-					if (objects[i].type != 'electronics')
-					{
-						var result = exporter.parse(objects[i]);
-						saveString( result, objects[i].name.concat(".stl") );
-					}
-				}
-			}
-
-			function exportBinary() {
-				for ( var i = 0; i <objects.length; i++)
-				{
-					if (objects[i].type != 'electronics')
-					{
-						var result = exporter.parse( objects[i], { binary: true } );
-						saveArrayBuffer( result, objects[i].name.concat(".stl") );
-					}
-				}
-				
-			}	
-			*/
 			
+			//STL export functions
 			function exportASCII(Mesh) {
 
 				var result = exporter.parse( Mesh );
@@ -189,13 +146,6 @@
 
 			}
 
-			function exportBinary(Mesh) {
-
-				var result = exporter.parse( Mesh, { binary: true } );
-				saveArrayBuffer( result, Mesh.name.concat(".stl") );
-
-			}
-			
 			var link = document.createElement( 'a' );
 			link.style.display = 'none';
 			document.body.appendChild( link );
@@ -205,7 +155,6 @@
 				link.href = URL.createObjectURL( blob );
 				link.download = filename;
 				link.click();
-
 			}
 			
 			function saveString( text, filename ) {
@@ -224,24 +173,14 @@
 			{
 				for ( var i = 0; i <objects.length; i++)
 				{
-					if (objects[i].type != 'electronics')
+					if (objects[i].type == 'joint' || objects[i].type == 'link')
 					{
 						exportASCII(objects[i])
 					}
 				}
 			}
 			
-			function export_all_bin ()
-			{
-				for ( var i = 0; i <objects.length; i++)
-				{
-					if (objects[i].type != 'electronics')
-					{
-						exportBinary(objects[i])
-					}
-				}
-			}
-			
+			//GUI
 			function displaygui() 
 			{
 				var gui = new GUI();
@@ -256,9 +195,12 @@
 					loadbhinge : function() { load_bhinge();},
 					loadlink1 : function() { load_link1();},
 					loadlink2 : function(){ load_link2();},
-					exp_ASCII : function () { export_all_ASCII();},
-					exp_bin : function () { export_all_bin ();}
+					loadquad : function() { load_quad();},
+					loadtri : function() { load_tri();},
+					loadcircle : function() { load_circle();},
+					exp_ASCII : function () { export_all_ASCII();}
 				};
+				
 				//joints
 				var joint = gui.addFolder('JOINTS');
 				joint.add(parameters, 'loadmsocket').name('Male Socket');
@@ -276,8 +218,13 @@
 				electronics.add(parameters, 'loadhorn').name('Horn');
 				electronics.add(parameters, 'loadservo').name('Servo');
 				
-				gui.add(parameters, 'exp_ASCII').name('EXPORT ASCII');
-				gui.add(parameters, 'exp_bin').name('EXPORT BIN');
+				//cardboard
+				var cardboard = gui.addFolder('CARDBOARD');
+				cardboard.add(parameters, 'loadquad').name('Quad');
+				cardboard.add(parameters, 'loadtri').name( 'Tri');
+				cardboard.add(parameters, 'loadcircle').name('Circle');
+				
+				gui.add(parameters, 'exp_ASCII').name('EXPORT STL');
 
 				gui.open();  //default show gui items
 			}
@@ -292,8 +239,6 @@
 				render();
 			}
 
-
-	
 			function onDocumentMouseDown(event) 
 			{
 				event.preventDefault();
@@ -322,6 +267,9 @@
 				if(Mesh.name == 'f_socket' && Mesh.mate_flag==true)
 				{	
 					//only rotation about XYZ
+					control.showX = true;
+					control.showY = true;
+					control.showZ = true;
 					control.setMode("rotate");
 					control.attach( Mesh );
 					scene.add( control );
@@ -333,12 +281,13 @@
 					//only rotation about Z
 					control.setMode("rotate");
 					control.showX = false;
+					control.showZ = true;
 					control.showY = false;
 					control.attach( Mesh );
 					scene.add( control );
 				}
 				
-				//top hinge joined to any link1 has no DOF								//potential bug
+				//top hinge joined to any link1 has no DOF							
 				else if(Mesh.name == 'thinge' && Mesh.joint_flag==true)
 				{
 					//no handles
@@ -356,16 +305,72 @@
 					//no handles
 				}
 				
+				//horn attached to servo- horn shall only rotate along Y axis
+				else if (Mesh.name == 'horn' && Mesh.mate_flag ==true)
+				{
+					//only rotation about Y
+					control.setMode("rotate");
+					control.showX = false;
+					control.showY = true;
+					control.showZ = false;
+					control.attach( Mesh );
+					scene.add( control );
+				}
+				
+				//cardboard attached to horn- move in XY plane
+				else if(Mesh.type == 'accessory' && Mesh.joint_flag==true)
+				{
+					click_counter++;
+					control.showX = true;
+					control.showY = true
+					control.showZ = false;
+					control.setMode( "scale");
+					
+					control.attach( Mesh );
+					scene.add( control );
+				}
+				
+				//cardboard accessories-extra control for scaling in X and Y direction
+				else if (Mesh.type == 'accessory')
+				{
+					click_counter++;
+					control.showX = true;
+					control.showY = true;
+					control.showZ = true;
+	
+					//reset counter
+					if (click_counter>2) click_counter =0;
+					
+					//for cardboard accessory toggle between translate, rotate and scale modes
+					switch (click_counter)
+					{
+					case 0:
+					control.setMode( "rotate" );
+					break;
+					
+					case 1:
+					control.setMode( "translate" );
+					break;
+					
+					case 2:
+					control.showZ = false;
+					control.setMode( "scale");
+					break;
+					}
+					control.attach( Mesh );
+					scene.add( control );
+				}
+				
 				//default show rotate and translate handles
 				else
 				{
 					click_counter++;
 					control.showX = true;
 					control.showY = true;
-					//control.showZ = true;
+					control.showZ = true;
 					
 					//reset counter
-					if (click_counter==2) click_counter =0;
+					if (click_counter>1) click_counter =0;
 					
 					switch (click_counter)
 					{
@@ -393,12 +398,13 @@
 				//check collision between male and female socket
 				if (msload_flag==true && fsload_flag==true)
 				{
-					if(bb_m_socket.intersectsBox(bb_f_socket))
+					if(m_socket.bb.intersectsBox(f_socket.bb))
 					{	
 						//same position
-						f_socket.position.y = m_socket.position.y;
 						f_socket.position.x = m_socket.position.x;
+						f_socket.position.y = m_socket.position.y;
 						f_socket.position.z = m_socket.position.z;
+						
 						m_socket.mate_flag = true;
 						f_socket.mate_flag = true;
 					}
@@ -407,20 +413,25 @@
 				//check collision between servo and horn
 				if(sload_flag==true && hload_flag==true)
 				{
-					if(bb_horn.intersectsBox(bb_servo))
+					if(horn.bb.intersectsBox(servo.bb))
 					{
-						horn.position.y = servo.position.y + 15;
-						horn.position.x = servo.position.x -5;
+						horn.position.x = servo.position.x;
+						horn.position.y = servo.position.y;
 						horn.position.z = servo.position.z;
+						
+						horn.rotation.x = servo.rotation.x;
+						//horn.rotation.y = servo.rotation.y;
+						horn.rotation.z = servo.rotation.z;
+						
 						servo.mate_flag = true;
 						horn.mate_flag = true;
 					}
 				}
 				
-				//check collision between link1 and female socket	
+				//check collision between link1 and female socket
 				if (l1load_flag==true && fsload_flag==true)
 				{
-					if(bb_link1.intersectsBox(bb_f_socket))
+					if(link1.bb.intersectsBox(f_socket.bb))
 					{
 						//rigid joint : same position, same rotation
 						link1.position.y = f_socket.position.y;
@@ -431,15 +442,44 @@
 						link1.rotation.y = f_socket.rotation.y;
 						link1.rotation.z = f_socket.rotation.z;
 						
+						link1.translateY(14.652+19.9);
+						
 						link1.joint_flag = true;
 						f_socket.joint_flag = true;
+					}
+				}
+				
+				//check collision between cardboard and horn
+				for (var i = 0; i<cardboards.length; i++)
+				{
+					if(cardboards[i].load_flag==true && hload_flag==true)
+					{
+					
+						if(cardboards[i].bb.intersectsBox(horn.bb))
+						{
+						//rigid joint : same position, same rotation
+
+						cardboards[i].position.y = horn.position.y;
+						cardboards[i].position.x = horn.position.x;
+						cardboards[i].position.z = horn.position.z;
+						
+						cardboards[i].rotation.x = horn.rotation.x;
+						cardboards[i].rotation.y = horn.rotation.y;
+						cardboards[i].rotation.z = horn.rotation.z;
+						
+						cardboards[i].rotateX(Math.PI/2);
+						cardboards[i].translateZ(-2.9-3);
+						
+						cardboards[i].joint_flag = true;
+						horn.joint_flag = true;
+						}
 					}
 				}
 				
 				//check collision between link1 and top hinge
 				if (l1load_flag==true && thload_flag==true)
 				{
-					if(bb_link1.intersectsBox(bb_thinge))
+					if(link1.bb.intersectsBox(thinge.bb))
 					{
 						//rigid joint : same position, same rotation
 						thinge.position.y = link1.position.y;
@@ -451,10 +491,8 @@
 						thinge.rotation.z = link1.rotation.z;
 						
 						//transforms to orient
-						thinge.translateY(14.652+40+2.5);
+						thinge.translateY(20+2.5);
 						thinge.translateX(25.48);
-						thinge.rotateX(Math.PI);
-						thinge.rotateZ(Math.PI/2);
 						
 						link1.joint_flag = true;
 						thinge.joint_flag = true;
@@ -464,7 +502,7 @@
 				//check collision between top and bottom hinge
 				if (thload_flag==true && bhload_flag==true)
 				{
-					if(bb_thinge.intersectsBox(bb_bhinge))
+					if(thinge.bb.intersectsBox(bhinge.bb))
 					{
 						//same position 
 						bhinge.position.y = thinge.position.y;
@@ -484,7 +522,7 @@
 				//check collision between bottom hinge and link2
 				if (bhload_flag==true && l2load_flag==true)
 				{
-					if(bb_link2.intersectsBox(bb_bhinge))
+					if(link2.bb.intersectsBox(bhinge.bb))
 					{
 						//rigid joint : same position, same rotation
 						link2.position.x = bhinge.position.x;
@@ -505,45 +543,13 @@
 				}
 				
 				//activate bounding boxes
-				if (msload_flag==true)
+				for (var i = 0; i <objects.length ; i++)
 				{
-					bb_m_socket.setFromObject(m_socket);
-					//mBoxHelper.update();
-				}
-				if (fsload_flag==true)
-				{
-					bb_f_socket.setFromObject(f_socket);
-					//fBoxHelper.update();
-				}
-				if (hload_flag==true)
-				{
-					bb_horn.setFromObject(horn);
-					//hBoxHelper.update();
-				}
-				if (sload_flag==true)
-				{
-					bb_servo.setFromObject(servo);
-					//sBoxHelper.update();
-				}
-				if (thload_flag==true)
-				{
-					bb_thinge.setFromObject(thinge);
-					//thBoxHelper.update();
-				}
-				if (bhload_flag==true)
-				{
-					bb_bhinge.setFromObject(bhinge);
-					//bhBoxHelper.update();
-				}
-				if (l1load_flag==true)
-				{
-					bb_link1.setFromObject(link1);
-					//l1BoxHelper.update();
-				}
-				if (l2load_flag==true)
-				{
-					bb_link2.setFromObject(link2);
-					//l2BoxHelper.update();
+					if (objects[i].load_flag == true)
+					{
+					objects[i].bb.setFromObject(objects[i]);
+					
+					}
 				}
 				
 				renderer.clear();
@@ -555,7 +561,7 @@
 			function load_msocket()
 				{
 					var loader = new PLYLoader();
-					loader.load( './models/ply/makemate/Socket Joint Male.ply', function ( geometry ) 
+					loader.load( './models/ply/makemate/joints/Socket Joint Male.ply', function ( geometry ) 
 					{
 						geometry.computeVertexNormals();
 						var material = new THREE.MeshStandardMaterial( { color: 0xffff66, flatShading: true } );
@@ -567,10 +573,8 @@
 						m_socket.position.y = 20;
 						
 						//set up bounding box
-						bb_m_socket = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-						bb_m_socket.setFromObject(m_socket);
-						
-						//mBoxHelper = new THREE.BoxHelper(m_socket, 0x00ff00);
+						m_socket.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						m_socket.bb.setFromObject(m_socket);
 		
 						m_socket.castShadow = true;
 						m_socket.receiveShadow = true;
@@ -589,7 +593,7 @@
 			function load_fsocket()
 				{
 					var loader = new PLYLoader();
-					loader.load( './models/ply/makemate/Socket Joint Female.ply', function ( geometry ) 
+					loader.load( './models/ply/makemate/joints/Socket Joint Female.ply', function ( geometry ) 
 					{
 						geometry.computeVertexNormals();
 
@@ -604,12 +608,8 @@
 						//f_socket.position.z = - 5;
 						
 						//bounding box
-						bb_f_socket = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-						bb_f_socket.setFromObject(f_socket);
-						
-						//fBoxHelper = new THREE.BoxHelper(f_socket, 0x00ff00);
-						//scene.add(fBoxHelper);
-						//fBoxHelper.update();
+						f_socket.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						f_socket.bb.setFromObject(f_socket);
 						
 						f_socket.castShadow = true;
 						f_socket.receiveShadow = true;
@@ -619,7 +619,7 @@
 						
 						//set flags
 						fsload_flag = true;
-						fsload_flag = true;
+						f_socket.load_flag = true;
 						f_socket.mate_flag = false;
 						f_socket.joint_flag = false;
 					} );
@@ -628,7 +628,7 @@
 			function load_horn()
 				{
 					var loader = new PLYLoader();
-					loader.load( './models/ply/makemate/horn.ply', function ( geometry ) 
+					loader.load( './models/ply/makemate/electronics/horn.ply', function ( geometry ) 
 					{
 						geometry.computeVertexNormals();
 						
@@ -641,15 +641,11 @@
 						horn.position.x = - 20;
 						horn.position.y = - 40;
 						//horn.position.z = - 5;
-						horn.rotation.z=  Math.PI;
+						//horn.rotation.z=  Math.PI;
 						
 						//bounding box
-						bb_horn = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-						bb_horn.setFromObject(horn);
-						
-						//hBoxHelper = new THREE.BoxHelper(horn, 0x00ff00);
-						//scene.add(hBoxHelper);
-						//hBoxHelper.update();
+						horn.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						horn.bb.setFromObject(horn);
 
 						horn.castShadow = true;
 						horn.receiveShadow = true;
@@ -668,7 +664,7 @@
 			function load_servo()
 				{
 					var loader = new PLYLoader();
-					loader.load( './models/ply/makemate/servo.ply', function ( geometry ) 
+					loader.load( './models/ply/makemate/electronics/servo.ply', function ( geometry ) 
 					{
 						geometry.computeVertexNormals();
 						
@@ -678,19 +674,11 @@
 						servo.type = "electronics";
 				
 						//bounding box
-						bb_servo = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-						bb_servo.setFromObject(servo);
-						//sBoxHelper = new THREE.BoxHelper(servo, 0x00ff00);
-						//scene.add(sBoxHelper);
-						//sBoxHelper.update();
+						servo.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						servo.bb.setFromObject(servo);
 						
 						//default position
 						servo.position.x = - 20;
-						//servo.position.y =  40;
-						//servo.position.z = - 5;
-						//servo.rotation.z=  Math.PI;
-						//servo.scale.multiplyScalar( 3 );
-						
 						
 						servo.castShadow = true;
 						servo.receiveShadow = true;
@@ -709,7 +697,7 @@
 			function load_thinge()
 				{
 					var loader = new PLYLoader();
-					loader.load( './models/ply/makemate/Top Hinge Joint.ply', function ( geometry ) 
+					loader.load( './models/ply/makemate/joints/Top Hinge Joint.ply', function ( geometry ) 
 					{
 						geometry.computeVertexNormals();
 						
@@ -722,9 +710,8 @@
 						thinge.position.y = 20;
 						
 						//bounding box
-						bb_thinge = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-						bb_thinge.setFromObject(thinge);
-						//thBoxHelper = new THREE.BoxHelper(thinge, 0x00ff00);
+						thinge.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						thinge.bb.setFromObject(thinge);
 				
 						thinge.castShadow = true;
 						thinge.receiveShadow = true;
@@ -743,7 +730,7 @@
 			function load_bhinge()
 				{
 					var loader = new PLYLoader();
-					loader.load( './models/ply/makemate/Bottom Hinge Joint.ply', function ( geometry ) 
+					loader.load( './models/ply/makemate/joints/Bottom Hinge Joint.ply', function ( geometry ) 
 					{
 						geometry.computeVertexNormals();
 							
@@ -756,11 +743,9 @@
 						bhinge.position.y = 20;
 						
 						//bounding box
-						bb_bhinge = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-						bb_bhinge.setFromObject(bhinge);
-						
-						//bhBoxHelper = new THREE.BoxHelper(bhinge, 0x00ff00);
-				
+						bhinge.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						bhinge.bb.setFromObject(bhinge);
+	
 						bhinge.castShadow = true;
 						bhinge.receiveShadow = true;
 
@@ -778,7 +763,7 @@
 			function load_link1()
 				{
 					var loader = new PLYLoader();
-					loader.load( './models/ply/makemate/link1.ply', function ( geometry ) 
+					loader.load( './models/ply/makemate/links/link1.ply', function ( geometry ) 
 					{
 						geometry.computeVertexNormals();
 						
@@ -791,10 +776,8 @@
 						link1.position.y = 20;
 						
 						//bounding box
-						bb_link1 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-						bb_link1.setFromObject(link1);
-						
-						//l1BoxHelper = new THREE.BoxHelper(link1, 0x00ff00);
+						link1.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						link1.bb.setFromObject(link1);
 					
 						link1.castShadow = true;
 						link1.receiveShadow = true;
@@ -813,7 +796,7 @@
 			function load_link2()
 				{
 					var loader = new PLYLoader();
-					loader.load( './models/ply/makemate/link2.ply', function ( geometry ) 
+					loader.load( './models/ply/makemate/links/link2.ply', function ( geometry ) 
 					{
 						geometry.computeVertexNormals();
 						
@@ -826,10 +809,8 @@
 						link2.position.y = 20;
 						
 						//boinding box
-						bb_link2 = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-						bb_link2.setFromObject(link2);
-						
-						//l2BoxHelper = new THREE.BoxHelper(link2, 0x00ff00);
+						link2.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						link2.bb.setFromObject(link2);
 					
 						link2.castShadow = true;
 						link2.receiveShadow = true;
@@ -842,6 +823,108 @@
 						link2.load_flag = true;
 						link2.mate_flag = false;
 						link2.joint_flag = false;
+					} );
+				}
+				
+				function load_quad()
+				{
+					var loader = new PLYLoader();
+					loader.load( './models/ply/makemate/cardboard/square40.ply', function ( geometry ) 
+					{
+						geometry.computeVertexNormals();
+						
+						var material = new THREE.MeshStandardMaterial( { color: 0x866b00, flatShading: true } );
+						quad = new THREE.Mesh( geometry, material );
+						quad.name = "quad";
+						quad.type = "accessory";
+						
+						//default position
+						quad.position.y = 20;
+						
+						//boinding box
+						quad.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						quad.bb.setFromObject(quad);
+					
+						quad.castShadow = true;
+						quad.receiveShadow = true;
+
+						scene.add( quad);
+						objects.push( quad);
+						cardboards.push(quad);
+							
+						//set flags
+						qload_flag = true;
+						quad.load_flag = true;
+						quad.mate_flag = false;
+						quad.joint_flag = false;
+					} );
+				}
+				
+				function load_tri()
+				{
+					var loader = new PLYLoader();
+					loader.load( './models/ply/makemate/cardboard/equitri40.ply', function ( geometry ) 
+					{
+						geometry.computeVertexNormals();
+						
+						var material = new THREE.MeshStandardMaterial( { color: 0x866b00, flatShading: true } );
+						tri = new THREE.Mesh( geometry, material );
+						tri.name = "tri";
+						tri.type = "accessory";
+						
+						//default position
+						tri.position.y = 20;
+						
+						//boinding box
+						tri.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						tri.bb.setFromObject(tri);
+						
+						tri.castShadow = true;
+						tri.receiveShadow = true;
+
+						scene.add( tri);
+						objects.push( tri);
+						cardboards.push(tri);
+							
+						//set flags
+						triload_flag = true;
+						tri.load_flag = true;
+						tri.mate_flag = false;
+						tri.joint_flag = false;
+					} );
+				}
+				
+				function load_circle()
+				{
+					var loader = new PLYLoader();
+					loader.load( './models/ply/makemate/cardboard/circle40.ply', function ( geometry ) 
+					{
+						geometry.computeVertexNormals();
+						
+						var material = new THREE.MeshStandardMaterial( { color: 0x866b00, flatShading: true } );
+						circle = new THREE.Mesh( geometry, material );
+						circle.name = "circle";
+						circle.type = "accessory";
+						
+						//default position
+						circle.position.y = 20;
+						
+						//boinding box
+						circle.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
+						circle.bb.setFromObject(circle);
+						
+						circle.castShadow = true;
+						circle.receiveShadow = true;
+
+						scene.add(circle);
+						objects.push(circle);
+						cardboards.push(circle);
+							
+						//set flags
+						circleload_flag = true;
+						circle.load_flag = true;
+						circle.mate_flag = false;
+						circle.joint_flag = false;
 					} );
 				}
 		
